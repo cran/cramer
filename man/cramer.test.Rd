@@ -1,40 +1,85 @@
 \name{cramer.test}
 \alias{cramer.test}
+\alias{phiBahr}
+\alias{phiCramer}
+\alias{phiFracA}
+\alias{phiFracB}
+\alias{phiLog}
+\alias{print.cramertest}
 \title{
 Cramer-Test for uni- and multivariate two-sample-problem
 }
 \description{
 Perform Cram\eqn{\mbox{\'e}}{e}r-test for two-sample-problem. Both univariate and
 multivariate data is possible. For calculation of the critical value
-bootstrap-methods are used. Ordinary and permutation methods can be 
-chosen as well as the number of bootstrap-replicates taken.
+Monte-Carlo-bootstrap-methods and eigenvalue-methods are available. For the bootstrap
+access ordinary and permutation methods can be chosen as well as the number
+of bootstrap-replicates taken.
 }
 \usage{
 cramer.test(x,y,conf.level=0.95,replicates=1000,
-            sim="ordinary",just.statistic=FALSE) 
+            sim="ordinary",just.statistic=FALSE,
+            kernel="phiCramer", maxM=2^14, K=160) 
 }
 \arguments{
 \item{x}{
-First set of observations. Either in vector form (univariate) or in a
-matrix with one observation per row (multivariate).
+  First set of observations. Either in vector form (univariate) or in a
+  matrix with one observation per row (multivariate).
 }
 \item{y}{
-Second set of observations. Same dimension as \code{x}.
+  Second set of observations. Same dimension as \code{x}.
 }
 \item{conf.level}{
-Confidence level of test.
-}
-\item{replicates}{
-Number of bootstrap-replicates taken to obtain critical value.
+  Confidence level of test. The default is \code{conf.level=0.95}.
 }
 \item{sim}{
-Type of bootstrap method. Possible values are \code{"ordinary"} for normal 
-bootstrap and \code{"permutation"} for a permutation test.
+  Type of Monte-Carlo-bootstrap method or eigenvalue method. Possible values are
+  \code{"ordinary"} (default) for normal Monte-Carlo-bootstrap, \code{"permutation"}
+  for a permutation Monte-Carlo-bootstrap or \code{"eigenvalue"} for bootstrapping
+  the limit distribution, evaluating the (approximate) eigenvalues being the weights
+  of the limiting chisquared-distribution and using the critical value of this
+  approximation (calculated via fast fourier transform). This method is especially good 
+  if the dataset is too large to perform Monte-Carlo-bootstrapping (although it must not
+  be too large so the matrix eigenvalue problem can still be solved).
+}
+\item{replicates}{
+  Number of bootstrap-replicates taken to obtain critical value. The default is \code{replicates=1000}.
+  When using the eigenvalue method, this variable is unused.
+}
+\item{maxM}{
+  Gives the maximum number of points used for the fast fourier transform. When using
+  Monte-Carlo-bootstrap methods, this variable is unused.
+}
+\item{K}{
+  Gives the upper value up to which the integral for the calculation of the
+  distribution function out of the characteristic function (Gurlands formula) is
+  evaluated. The default ist 160. Careful: When increasing \code{K} it is necessary to increase \code{maxM} as
+  well since the resolution of the points where the distribution function is calculated
+  is
+  \deqn{
+    \frac{2\pi}{K}.
+  }{
+    2 PI/K.
+  }
+  Thus, if just \code{K} is increased the maximum value, where the distribution function
+  is calculated is lower. 
+  When using Monte-Carlo-bootstrap methods, this variable is unused.
 }
 \item{just.statistic}{
-Boolean variable. If \code{TRUE} just the value of the Cram\eqn{\mbox{\'e}}{e}r-statistic
-is calculated and no bootstrap-replicates are produced.
-}}
+  Boolean variable. If \code{TRUE} just the value of the Cram\eqn{\mbox{\'e}}{e}r-statistic
+  is calculated and no bootstrap-replicates are produced.
+}
+\item{kernel}{
+  Character-string giving the name of the kernel function. The default is \code{"phiCramer"} which
+  is the Cram\eqn{\mbox{\'e}}{e}r-test included 
+  in earlier versions of this package and which is used in the paper of Baringhaus and the author mentioned 
+  below. It is possible to use user-defined kernel functions here. The functions needs to be able to deal with
+  matrix arguments. Kernel functions need to be defined on 
+  the positive real line with value 0 at 0 and have a nonconstant completely monotone first 
+  derivative. An example is show in the Examples section below. Build-in functions are \code{"phiCramer"},
+  \code{"phiBahr"}, \code{"phiLog"}, \code{"phiFracA"} and \code{"phiFracB"}.
+}
+}
 
 \value{
 The returned value is an object of class \code{"cramertest"}, containing the following
@@ -59,7 +104,7 @@ Value of the Cram\eqn{\mbox{\'e}}{e}r-statistic for the given observations.
 Confidence level for the test.
 }
 \item{crit.value}{
-Critical value calculated by bootstrap method.
+Critical value calculated by bootstrap method, eigenvalue method, respectively. When using the eigenvalue method, the distribution under the hypothesis will be interpolated linearly.
 }
 \item{p.value}{
 Estimated p-value of the test.
@@ -73,37 +118,79 @@ Method used for obtaining the critical value.
 }
 \item{replicates}{
 Number of bootstrap-replicates taken.
-}}
+}
+\item{ev}{
+  Contains eigenvalues and eigenfunctions when using the eigenvalue-method to obtain the
+  critical value
+}
+\item{hypdist}{
+  Contains the via fft reconstructed distribution function under the hypothesis. \code{$x}
+  contains the x-values and \code{$Fx} the values of the distribution function at the positions.
+}
+}
 
 \details{
 The Cram\eqn{\mbox{\'e}}{e}r-statistic is given by
 \deqn{
-T_{m,n} = \frac{mn}{m+n}\biggl(\frac{1}{mn}\sum_{i\in\underline{m},j\in\underline{n}}\|\vec{X}_i-\vec{Y}_j\| 
+T_{m,n} = \frac{mn}{m+n}\biggl(\frac{2}{mn}\sum_{i,j}^{m,n}\phi(\|\vec{X}_i-\vec{Y}_j\|^2)-\frac{1}{m^2}\sum_{i,j=1}^m\phi(\|\vec{X}_{i}-\vec{X}_{j}\|^2)
 }{
-T=mn/(m+n) ( 1/(mn) Sum[i=1..m,j=1..n] ||X_i-Y_j|| - 1/(2m^2) Sum[i=1..m,j=1..m] ||X_i-X_j|| - 1/(2n^2) Sum[i=1..n,j=1..n] ||Y_i-Y_j|| )
+T=mn/(m+n) ( 2/(mn) Sum[i=1..m,j=1..n] phi(||X_i-Y_j||^2) - 1/(m^2) Sum[i=1..m,j=1..m] phi(||X_i-X_j||^2) - 1/(n^2) Sum[i=1..n,j=1..n] phi(||Y_i-Y_j||^2) )
 }
 \deqn{
--\frac{1}{2m^2}\sum_{i_1\in\underline{m},i_2\in\underline{m}}\|\vec{X}_{i_1}-\vec{X}_{i_2}\|-\frac{1}{2n^2}\sum_{j_1\in\underline{n},j_2\in\underline{n}}\|\vec{Y}_{j_1}-\vec{Y}_{j_2}\|\biggr),
+-\frac{1}{n^2}\sum_{i,j=1}^n\phi(\|\vec{Y}_{i}-\vec{Y}_{j}\|^2)\biggr),
 }{\code{}}
-\eqn{\mbox{where}\ \underline{m}=\{1,\ldots,m\}.}{\code{}}
-The critical value is obtained by using the bootstrap-method with this statistic. 
-The proof that this procedure yields in a working test is given in the reference
-listed below.
-
-The idea of using this statistic is due to L. Baringhaus, University of Hanover.
+The function \eqn{\phi}{phi} is the kernel function mentioned in the Parameters
+section.
+The proof that the Monte-Carlo-Bootstrap and eigenvalue methods work is given in the reference
+listed below. Other build-in kernel functions are
+\deqn{
+  \phi_{Cramer}(z)=\sqrt{z}/2
+}{
+  phiCramer(z)=z^(1/2)/2
 }
-\references{
-The test and its properties is described in :
+(recommended for location alternatives),
+\deqn{
+  \phi_{Bahr}(z)=1-\exp(-z/2)
+}{
+  phiBahr(z)=1-exp(-z/2)
+}
+(recommended for dispersion as well as location alternatives),
+\deqn{
+  \phi_{log}(z)=\log(1+z)
+}{
+  phiLog(z)=log(1+z)
+}
+(preferrably for location alternatives),
+\deqn{
+  \phi_{FracA}(z)=1-\frac{1}{1+z}
+}{
+  phiFracA(z)=1-1/(1+z)
+}
+(preferrably for dispersion alternatives) and
+\deqn{
+  \phi_{FracB}(z)=1-\frac{1}{(1+z)^2}.
+}{
+  phiFracA(B)=1-1/(1+z)^2.
+}
+(also for dispersion alternatives). A further analysis of the test performance for these
+kernels will be included in a further publication. The idea of using this statistic is 
+due to L. Baringhaus, University of Hanover.
+}
 
-Baringhaus, L. and Franz, C. (2001) \emph{On a new multivariate two-sample test},
-submitted
+\references{
+The test and its properties is described in:
+
+Baringhaus, L. and Franz, C. (2004) \emph{On a new multivariate two-sample test}, Journal of Multivariate Analysis, 88, p. 190-206
 
 Franz, C. (2000) \emph{Ein statistischer Test fuer das mehrdimensionale Zweistichproben-Problem}, 
 German, Diploma thesis, University of Hanover.
 
-}
-\seealso{
-\code{\link{print.cramertest}}
+The test of Bahr so far is only mentioned in:
+
+Bahr, R. (1996) \emph{Ein neuer Test fuer das mehrdimensionale Zwei-Stichproben-Problem bei allgemeiner Alternative},
+German, Ph.D. thesis, University of Hanover.
+
+The eigenvalue method will be described in a forthcoming article.
 }
 \examples{
 # comparison of two univariate normal distributions
@@ -111,11 +198,20 @@ x<-rnorm(20,mean=0,sd=1)
 y<-rnorm(50,mean=0.5,sd=1)
 cramer.test(x,y)
 
-# comparison of two multivariate normal distributions with permutation test
-library(MASS)
-x<-mvrnorm(n=20,mu=c(0,0),Sigma=diag(c(1,1)))
-y<-mvrnorm(n=50,mu=c(0.3,0),Sigma=diag(c(1,1)))
-cramer.test(x,y,sim="permutation")
+# comparison of two multivariate normal distributions with permutation test:
+# library "MASS" for multivariate routines (included in package "VR")
+ 
+# library(MASS)
+# x<-mvrnorm(n=20,mu=c(0,0),Sigma=diag(c(1,1)))
+# y<-mvrnorm(n=50,mu=c(0.3,0),Sigma=diag(c(1,1)))
+# cramer.test(x,y,sim="permutation")
+
+# comparison of two univariate normal distributions with Bahrs Kernel
+phiBahr<-function(x) return(1-exp(-x/2))
+x<-rnorm(20,mean=0,sd=1)
+y<-rnorm(50,mean=0,sd=2)
+cramer.test(x,y,sim="eigenvalue",kernel="phiBahr")
+
 }
 \keyword{nonparametric}
 \keyword{multivariate}
