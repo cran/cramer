@@ -1,0 +1,45 @@
+Cramer-Test as R-Function (Version 0.2; Apr 2001)
+======================================================
+
+This is an attempt to implement the new Cramer-Two-Sample-
+Test as an R-Library. Univariate as well as multi-variate 
+data is supported. The library 'boot' from Angelo Canty is 
+required since the test is heavily based on bootstrap 
+critical values.
+
+The library contains the following functions, both of which
+have online help available.
+
+cramer.test       main test function
+print.cramertest  prints summary of test result
+
+As well as these functions the following function is 
+included. This function is not intended to be used alone 
+but is used by the above functions. 
+
+cramer.statistic  evaluates statistic, required for
+                  bootstrap 
+		  
+The following class is introduced to store test summaries
+
+cramertest
+
+The Cramer-Test is based on an idea of L. Baringhaus, 
+University of Hanover, and its properties are discussed in
+
+L.Baringhaus, C.Franz, "On a new multivariate two-sample
+   test", submitted, 2001
+
+C.Franz, "Ein statistischer Test fuer das mehrdimensionale
+   Zweistichproben-Problem", German, Diploma Thesis, 
+   University of Hanover, 12/2000
+   
+Any errors found should be reported to the author at the 
+email-address below for correction in the next version.                          
+   
+Carsten Franz
+Institute for Mathematical Stochastics
+University of Hanover
+Germany
+
+email : franz@stochastik.uni-hannover.de
