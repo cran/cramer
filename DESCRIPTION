@@ -1,6 +1,6 @@
 Package: cramer
-Version: 0.2-1
-Date: 2001/04/09
+Version: 0.3-1
+Date: 2001/05/19
 Title: Multivariate nonparametric Cramer-Test
 Author: Carsten Franz <franz@stochastik.uni-hannover.de>
 Maintainer: Carsten Franz <franz@stochastik.uni-hannover.de>

@@ -27,7 +27,6 @@ shown.
 \code{\link{cramer.test}}
 }
 \keyword{nonparametric}
-\keyword{cramer}
-\keyword{two-sample}
-\keyword{twosample}
+\keyword{multivariate}
+\keyword{htest}
 	                                                   

@@ -118,6 +118,5 @@ y<-mvrnorm(n=50,mu=c(0.3,0),Sigma=diag(c(1,1)))
 cramer.test(x,y,sim="permutation")
 }
 \keyword{nonparametric}
-\keyword{cramer}
-\keyword{two-sample}
-\keyword{twosample}
+\keyword{multivariate}
+\keyword{htest}
