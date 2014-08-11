@@ -1,4 +1,6 @@
-\name{cramer.test}
+\name{cramer-packge}
+\alias{cramer-package}
+\alias{cramer}
 \alias{cramer.test}
 \alias{phiBahr}
 \alias{phiCramer}
