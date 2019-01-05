@@ -1,2 +1,4 @@
 import(boot)
 export(cramer.test,phiBahr,phiCramer,phiFracA,phiFracB,phiLog,print.cramertest)
+importFrom("stats", "fft")
+S3method(print, cramertest) 

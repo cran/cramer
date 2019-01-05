@@ -1,8 +1,8 @@
 Package: cramer
-Version: 0.9-1
-Date: 2014/08/11
-Title: Multivariate nonparametric Cramer-Test for the
-        two-sample-problem
+Version: 0.9-3
+Date: 2019-01-05
+Title: Multivariate Nonparametric Cramer-Test for the
+        Two-Sample-Problem
 Author: Carsten Franz <carsten.franz@gmail.com>
 Maintainer: Carsten Franz <carsten.franz@gmail.com>
 Depends: R (>= 0.65), boot
@@ -13,7 +13,7 @@ Description: Provides R routine for the so called two-sample
         possibilities to approximate the critical value both of which 
         are included in this package.
 License: GPL (>= 2)
-Packaged: 2014-08-11 21:41:55 UTC; carsten
 Repository: CRAN
-Date/Publication: 2014-08-12 06:53:32
 NeedsCompilation: no
+Packaged: 2019-01-05 10:08:06 UTC; carsten
+Date/Publication: 2019-01-05 10:20:03 UTC
