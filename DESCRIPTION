@@ -1,6 +1,6 @@
 Package: cramer
-Version: 0.9-3
-Date: 2019-01-05
+Version: 0.9-4
+Date: 2024-02-04
 Title: Multivariate Nonparametric Cramer-Test for the
         Two-Sample-Problem
 Author: Carsten Franz <carsten.franz@gmail.com>
@@ -14,6 +14,10 @@ Description: Provides R routine for the so called two-sample
         are included in this package.
 License: GPL (>= 2)
 Repository: CRAN
-NeedsCompilation: no
-Packaged: 2019-01-05 10:08:06 UTC; carsten
-Date/Publication: 2019-01-05 10:20:03 UTC
+Encoding: UTF-8
+Imports: Rcpp (>= 1.0.12)
+LinkingTo: Rcpp
+Packaged: 2024-02-04 17:07:59 UTC; carsten
+RoxygenNote: 7.3.1
+NeedsCompilation: yes
+Date/Publication: 2024-02-05 21:30:02 UTC

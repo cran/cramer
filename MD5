@@ -1,5 +1,9 @@
-6c1e3a9ec4f4776907a184a5a04dddcb *CHANGES
-dcb88225c929866160aad4add460ea6e *DESCRIPTION
-2dad43327d9c34a2eb7be9569839e345 *NAMESPACE
-430e2be02cc99f7b3158ced8ca21f0b5 *R/cramer.R
-96ae362d1dd67c77ea9dd44f69718b71 *man/cramer-package.Rd
+f4f546af3c1535a3c6c856de6d7a20d9 *CHANGES
+102aa1c167cacf0471f2d1ab74e93b42 *DESCRIPTION
+7096e1864c2b41106c3f2b965ae301f1 *NAMESPACE
+7036fc52517529040e107cf06ee826cf *R/RcppExports.R
+f21912d58bb8f5f98fadf58d11bb6e7e *R/cramer.R
+869bbcf84d6c5c63d322ab94862e54da *man/cramer-package.Rd
+a964f3e9381ab12379d77fc8a29de901 *man/cramer.test.Rd
+5e3edf1964086b70c3e692a4346338c3 *src/RcppExports.cpp
+45fb10ac722f30e3e07ba0ae0ff70d94 *src/calculateLookupMatrix.cpp

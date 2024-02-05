@@ -1,4 +1,8 @@
-        0.9-3 (05.01.2019)
+	0.9-4 (04.02.2024)
+        
+        used Rcpp to increase speed for lookup matrix generation         
+
+	0.9-3 (05.01.2019)
         
         complied with CRAN title/date standards 
 
